@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import fondo from "../api/assets/fondo.jpg";
 import {
   Avatar,
@@ -37,6 +37,55 @@ function Copyright() {
 }
 
 const SignUp = () => {
+
+  const navigate = useNavigate();
+
+  // Estados locales para manejar valores del formulario
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // Petición al backend
+      const response = await fetch("http://localhost:3001/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        // Ajusta los nombres de los campos según lo que lee tu backend
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          // si en tu BD guardas "nombre_completo" y no "fullName", ajusta aquí
+          // rol si lo deseas => "Estudiante"
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("¡Registro exitoso!");
+        navigate("/"); // redirige a SignIn o a donde quieras
+      } else {
+        alert(data.message || "Error al registrarse");
+      }
+    } catch (err) {
+      console.error("Error en SignUp:", err);
+      alert("Hubo un error en el registro");
+    }
+  };
+
   return (
     <ThemeProvider theme={theme}> {/* Aquí envolvemos el componente en ThemeProvider */}
       <Box
@@ -45,7 +94,7 @@ const SignUp = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          position: "relative", 
+          position: "relative",
           backgroundImage: `url(${fondo})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
@@ -130,7 +179,8 @@ const SignUp = () => {
                   Regístrate
                 </Typography>
               </Box>
-              <Box component="form" noValidate sx={{ mt: 1 }}>
+              <Box component="form" noValidate sx={{ mt: 1 }} onSubmit={handleSubmit}>
+
                 <TextField
                   margin="normal"
                   required
@@ -139,7 +189,10 @@ const SignUp = () => {
                   label="Nombre Completo"
                   name="fullName"
                   autoFocus
+                  value={formData.fullName}
+                  onChange={handleChange}
                 />
+
                 <TextField
                   margin="normal"
                   required
@@ -148,6 +201,9 @@ const SignUp = () => {
                   label="Correo Electrónico"
                   name="email"
                   autoComplete="email"
+                  autoFocus
+                  value={formData.email}
+                  onChange={handleChange}
                 />
                 <TextField
                   margin="normal"
@@ -157,8 +213,11 @@ const SignUp = () => {
                   label="Contraseña"
                   type="password"
                   id="password"
-                  autoComplete="new-password"
+                  autoComplete="current-password"
+                  value={formData.password}
+                  onChange={handleChange}
                 />
+
                 <Button
                   type="submit"
                   fullWidth

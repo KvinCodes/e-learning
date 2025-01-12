@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { createTheme, ThemeProvider } from '@mui/material/styles'; // Importa las dependencias para el tema
-import { Link as RouterLink } from 'react-router-dom'; // Importa Link de React Router
+import { Link as RouterLink, useNavigate } from 'react-router-dom'; // Importa Link de React Router
 import fondo from "../api/assets/fondo.jpg";
 import {
   Avatar,
@@ -37,6 +37,56 @@ function Copyright() {
 }
 
 const SignIn = () => {
+
+  const navigate = useNavigate();
+
+  // Estados locales
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // Cuando el usuario hace submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://localhost:3001/api/auth/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Guardar el token en localStorage (o cookies, como prefieras)
+        localStorage.setItem("token", data.token);
+        // Podrías también guardar data.user para mostrar datos del usuario logueado
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        alert("¡Bienvenido!");
+        navigate("/reports"); // o la ruta a donde quieras ir tras login
+      } else {
+        alert(data.message || "Error al iniciar sesión");
+      }
+    } catch (err) {
+      console.error("Error en SignIn:", err);
+      alert("Hubo un error al iniciar sesión");
+    }
+  };
+
   return (
     <ThemeProvider theme={theme}> {/* Aquí envolvemos el componente en ThemeProvider */}
       <Box
@@ -45,7 +95,7 @@ const SignIn = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          position: "relative", 
+          position: "relative",
           backgroundImage: `url(${fondo})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
@@ -91,7 +141,7 @@ const SignIn = () => {
               borderRadius: "8px",
             }}
           />
-          
+
           {/* Right-side form */}
           <Grid
             item
@@ -133,7 +183,7 @@ const SignIn = () => {
                   Iniciar sesión
                 </Typography>
               </Box>
-              <Box component="form" noValidate sx={{ mt: 1 }}>
+              <Box component="form" noValidate sx={{ mt: 1 }} onSubmit={handleSubmit}>
                 <TextField
                   margin="normal"
                   required
@@ -143,6 +193,8 @@ const SignIn = () => {
                   name="email"
                   autoComplete="email"
                   autoFocus
+                  value={formData.email}
+                  onChange={handleChange}
                 />
                 <TextField
                   margin="normal"
@@ -153,7 +205,10 @@ const SignIn = () => {
                   type="password"
                   id="password"
                   autoComplete="current-password"
+                  value={formData.password}
+                  onChange={handleChange}
                 />
+
                 <FormControlLabel
                   control={<Checkbox value="remember" sx={{ color: "green.600" }} />}
                   label="Recuerdame"
@@ -180,13 +235,13 @@ const SignIn = () => {
                   </Grid>
                   <Grid item>
                     <Link
-                        component={RouterLink}  // Usa RouterLink para la navegación
-                        to="/signup"  // La ruta de la página de registro
-                        variant="body2"
-                        sx={{ color: "green.800" }}
-                      >
-                        {"No tienes una cuenta? Registrate"}
-                      </Link>
+                      component={RouterLink}  // Usa RouterLink para la navegación
+                      to="/signup"  // La ruta de la página de registro
+                      variant="body2"
+                      sx={{ color: "green.800" }}
+                    >
+                      {"No tienes una cuenta? Registrate"}
+                    </Link>
                   </Grid>
                 </Grid>
                 <Copyright sx={{ mt: 3 }} />
@@ -195,7 +250,7 @@ const SignIn = () => {
           </Grid>
         </Grid>
       </Box>
-    </ThemeProvider> 
+    </ThemeProvider>
   );
 };
 
