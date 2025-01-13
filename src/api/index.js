@@ -7,7 +7,7 @@ const departamentoRoutes = require('../api/routes/departamentosRoutes');
 const municipioRoutes = require('../api/routes/municipiosRoutes');
 const institucionRoutes = require('../api/routes/institucionesRoutes');
 const authRoutes = require("../api/routes/authRoutes");
-
+const estudiantesRoutes = require('./routes/EstudianteRoutes');
 console.log("Variables de entorno:", process.env);
 
 const app = express();
@@ -23,6 +23,8 @@ app.use("/api/auth", authRoutes);
 app.use('/api/departamentos', departamentoRoutes);
 app.use('/api/municipios', municipioRoutes);
 app.use('/api/instituciones', institucionRoutes);
+app.use('/api/estudiantes', estudiantesRoutes);
+
 
 sequelize.sync({ force: false }).then(() => {
   console.log('Base de datos conectada');
