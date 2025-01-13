@@ -1,26 +1,20 @@
-const { Sequelize } = require("sequelize");
-require('dotenv').config({ path: './src/.env' });
+const { Sequelize } = require('sequelize');
+const config = require('../config/config.json');
 
-const sequelize = new Sequelize("plataformaaprendizaje", process.env.DB_USER, process.env.DB_PASSWORD, {
-  host: process.env.DB_HOST,
-  dialect: "mysql",
+// Obtiene el entorno actual (por defecto "development")
+const env = process.env.NODE_ENV || 'development';
+const { username, password, database, host, dialect } = config[env];
+
+// Crea la conexión Sequelize
+const sequelize = new Sequelize(database, username, password, {
+  host,
+  dialect,
+  logging: false,
 });
-
-/*
-const sequelize = new Sequelize(
-  "plataformaaprendizaje", // Nombre de la base de datos
-  "root",                  // Usuario
-  "contraseña",           // Contraseña
-  {
-    host: "localhost",
-    dialect: "mysql",
-  }
-);
-*/
 
 sequelize
   .authenticate()
-  .then(() => console.log("Conexión a la base de datos exitosa."))
-  .catch((err) => console.error("Error al conectar a la base de datos:", err));
+  .then(() => console.log('Conexión a la base de datos exitosa'))
+  .catch((err) => console.error('Error al conectar a la base de datos:', err));
 
 module.exports = sequelize;
