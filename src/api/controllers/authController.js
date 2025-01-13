@@ -5,12 +5,18 @@ const { validateEmail, validatePassword } = require("../../utils/validators");
 
 const AuthController = {};
 
+const roleAssignmentByEmail = (email) => {
+  const domain = email.split("@")[1].toLowerCase();
+  if (domain === "adminlearn.com") return "Administrador";
+  if (domain === "teachlearn.com") return "Instructor";
+  return "Estudiante"; // Rol por defecto
+};
+
 // REGISTRO (SignUp)
 AuthController.register = async (req, res) => {
   try {
-
     console.log(req.body);
-    const { email, password, rol } = req.body;
+    const { email, password } = req.body;
 
     // Input validation
     if (!validateEmail(email)) {
@@ -31,11 +37,13 @@ AuthController.register = async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
+    const role = roleAssignmentByEmail(email);
+
     // Crear usuario
     const newUser = await User.create({
       email,
       contrasena: hashedPassword,
-      rol: rol || "Estudiante", // por defecto Estudiante
+      rol: role,
     });
 
     return res.status(201).json({

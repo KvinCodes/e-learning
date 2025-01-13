@@ -1,11 +1,31 @@
 const express = require("express");
 const router = express.Router();
 const AuthController = require("../controllers/authController");
+const authMiddleware = require("../middlewares/authMiddlewares");
+const roleMiddleware = require("../middlewares/roleMiddleware");
 
-// Ruta: POST /api/auth/signup
+// Rutas públicas
 router.post("/signup", AuthController.register);
-
-// Ruta: POST /api/auth/signin
 router.post("/signin", AuthController.login);
 
+// Rutas protegidas
+router.get(
+  "/admin-dashboard",
+  authMiddleware,
+  roleMiddleware(["Admin"]),
+  (req, res) => {
+    res.status(200).json({ message: "Bienvenido al panel de administrador" });
+  }
+);
+
+router.get(
+  "/instructor-dashboard",
+  authMiddleware,
+  roleMiddleware(["Instructor"]),
+  (req, res) => {
+    res.status(200).json({ message: "Bienvenido al panel de instructor" });
+  }
+);
+
 module.exports = router;
+
