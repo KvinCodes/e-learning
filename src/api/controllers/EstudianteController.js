@@ -8,7 +8,8 @@ const EstudianteController = {
       const estudiantes = await Estudiante.findAll({
         attributes: [
           'id',
-          'nombre_completo',
+          'nombre',
+          'apellido',
           'correo',
           'foto_perfil',
           'fecha_nacimiento',
@@ -31,7 +32,8 @@ const EstudianteController = {
       const estudiante = await Estudiante.findByPk(id, {
         attributes: [
           'id',
-          'nombre_completo',
+          'nombre',
+          'apellido',
           'correo',
           'foto_perfil',
           'fecha_nacimiento',
@@ -54,7 +56,8 @@ const EstudianteController = {
   createEstudiante: async (req, res) => {
     try {
       const {
-        nombre_completo,
+        nombre,
+        apellido,
         correo,
         contrasena,
         fecha_nacimiento,
@@ -64,15 +67,16 @@ const EstudianteController = {
       } = req.body;
 
       // Validación básica
-      if (!nombre_completo || !correo || !contrasena) {
-        return res.status(400).json({ error: 'Los campos obligatorios son: nombre_completo, correo y contrasena' });
+      if (!nombre || !apellido || !correo || !contrasena) {
+        return res.status(400).json({ error: 'Los campos obligatorios son: nombre, apellido, correo y contrasena' });
       }
 
       // Hashea la contraseña
       const hashedPassword = await bcrypt.hash(contrasena, 10);
 
       const nuevoEstudiante = await Estudiante.create({
-        nombre_completo,
+        nombre,
+        apellido,
         correo,
         contrasena: hashedPassword, // Almacena la contraseña hasheada
         fecha_nacimiento,
@@ -92,7 +96,8 @@ const EstudianteController = {
   updateEstudiante: async (req, res) => {
     const { id } = req.params;
     const {
-      nombre_completo,
+      nombre,
+      apellido,
       correo,
       contrasena,
       fecha_nacimiento,
@@ -108,7 +113,8 @@ const EstudianteController = {
       }
 
       // Actualiza solo los campos proporcionados
-      estudiante.nombre_completo = nombre_completo || estudiante.nombre_completo;
+      estudiante.nombre = nombre || estudiante.nombre;
+      estudiante.apellido = apellido || estudiante.apellido;
       estudiante.correo = correo || estudiante.correo;
 
       // Si se proporciona una nueva contraseña, hashearla antes de almacenarla

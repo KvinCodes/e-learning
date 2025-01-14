@@ -10,7 +10,11 @@ Estudiante.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    nombre_completo: { // Cambia a "nombre_completo"
+    nombre: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+    },
+    apellido: {
       type: DataTypes.STRING(100),
       allowNull: false,
     },

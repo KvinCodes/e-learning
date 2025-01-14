@@ -3,7 +3,8 @@ import axios from 'axios';
 
 const StudentProfileEdit = ({ student, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
-    nombre_completo: student.nombre_completo || '',
+    nombre: student.nombre || '',
+    apellido: student.apellido || '',
     correo: student.correo || '',
     descripcion: student.descripcion || '',
     fecha_nacimiento: student.fecha_nacimiento || '',
@@ -86,11 +87,24 @@ const StudentProfileEdit = ({ student, onSave, onCancel }) => {
     <form onSubmit={handleSubmit} className="max-w-md mx-auto p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold text-center mb-4">Editar Perfil</h2>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700">Nombre Completo</label>
+        <label className="block text-sm font-medium text-gray-700">Nombre</label>
+
         <input
           type="text"
-          name="nombre_completo"
-          value={formData.nombre_completo}
+          name="nombre"
+          value={formData.nombre}
+          onChange={handleInputChange}
+          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          required
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Apellido</label>
+
+        <input
+          type="text"
+          name="apellido"
+          value={formData.apellido}
           onChange={handleInputChange}
           className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           required
@@ -160,11 +174,11 @@ const StudentProfileEdit = ({ student, onSave, onCancel }) => {
         <label className="block text-sm font-medium text-gray-700">Municipio</label>
         <select
           name="municipio_id"
-          value={formData.municipio_id}
+          value={formData.municipio_id || ''}
           onChange={handleInputChange}
           className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
-          <option value="">Seleccione un municipio</option>
+          <option value="">Selecciona un municipio</option>
           {municipios.map((mun) => (
             <option key={mun.id} value={mun.id}>
               {mun.nombre}

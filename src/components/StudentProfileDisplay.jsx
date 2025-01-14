@@ -33,7 +33,9 @@ const StudentProfileDisplay = ({ student, onEdit }) => {
               color: '#F2F2F2', 
             }}
           >
-            {student.nombre_completo}
+            {student.nombre}
+            <br />
+            {student.apellido}
           </h2>
           <p
             className="text-sm"
