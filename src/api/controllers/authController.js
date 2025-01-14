@@ -8,7 +8,6 @@ const AuthController = {};
 const roleAssignmentByEmail = (email) => {
   const domain = email.split("@")[1].toLowerCase();
   if (domain === "adminlearn.com") return "Administrador";
-  if (domain === "teachlearn.com") return "Instructor";
   return "Estudiante"; // Rol por defecto
 };
 
