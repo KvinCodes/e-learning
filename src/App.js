@@ -3,6 +3,7 @@ import { BrowserRouter, useLocation } from "react-router-dom";
 import Router from './components/router';
 import Navbar from './components/partials/Navbar';
 import Footer from './components/partials/Footer';
+import UserProfileDisplay from "./components/StudentProfileDisplay";
 import './App.css';
 import './index.css';
 

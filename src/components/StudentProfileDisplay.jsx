@@ -1,53 +1,238 @@
-
 import React from 'react';
 
-const UserProfileDisplay = ({ userInfo, achievements, onEdit }) => {
+const StudentProfileDisplay = ({ student, onEdit }) => {
   return (
-    <>
-      <div className="flex items-center mb-8 px-6">
+    <div
+      className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden"
+      style={{
+        border: '2px solid #9FBFA7', 
+        backgroundColor: '#F2F2F2', 
+      }}
+    >
+      {/* Encabezado con imagen y nombre */}
+      <div
+        className="flex flex-col md:flex-row items-center p-6"
+        style={{
+          backgroundColor: '#24402B', 
+        }}
+      >
         <div className="relative w-32 h-32">
           <img
-            src={userInfo.foto_perfil || 'https://via.placeholder.com/150'} // Imagen por defecto si no hay foto
+            src={student.foto_perfil || 'https://via.placeholder.com/150'}
             alt="Foto de perfil"
-            className="w-full h-full rounded-full object-cover border-4 border-blue-500 shadow-md"
+            className="w-full h-full rounded-full object-cover border-4 shadow-lg"
+            style={{
+              borderColor: '#407348', 
+            }}
           />
         </div>
-        <div className="ml-8 flex-1">
-          <h2 className="text-xl font-bold text-gray-800">{userInfo.nombre_completo}</h2>
-          <p className="text-gray-600">{userInfo.correo}</p>
-          <p className="text-gray-700 mt-4">{userInfo.descripcion || 'Sin descripción'}</p>
-          <p className="text-gray-600 mt-2">Género: {userInfo.genero || 'No especificado'}</p>
-          <p className="text-gray-600 mt-2">
-            Municipio: {userInfo.municipio || 'No especificado'}
-          </p>
-          <p className="text-gray-600 mt-2">
-            Departamento: {userInfo.departamento || 'No especificado'}
-          </p>
-          <p className="text-gray-600 mt-2">
-            Institución: {userInfo.institucion_id || 'No especificado'}
+        <div className="ml-0 md:ml-8 mt-4 md:mt-0 text-center md:text-left">
+          <h2
+            className="text-2xl font-bold"
+            style={{
+              color: '#F2F2F2', 
+            }}
+          >
+            {student.nombre_completo}
+          </h2>
+          <p
+            className="text-sm"
+            style={{
+              color: '#9FBFA7', 
+            }}
+          >
+            {student.correo}
           </p>
         </div>
       </div>
-      <button
-        onClick={onEdit}
-        className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        Editar Perfil
-      </button>
-      <h2 className="text-2xl font-bold mt-10 mb-6 text-center">Logros y Distinciones</h2>
-      <ul className="grid grid-cols-2 gap-6 px-6">
-        {achievements.map((achievement) => (
-          <li
-            key={achievement.id}
-            className="p-6 bg-gray-100 rounded-lg shadow flex items-center justify-between"
-          >
-            <span className="text-lg font-semibold text-gray-800">{achievement.name}</span>
-            <span className="text-3xl">{achievement.badge}</span>
-          </li>
-        ))}
-      </ul>
-    </>
+
+      {/* Detalles del estudiante */}
+      <div className="p-6 space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <p
+              className="text-sm font-medium uppercase"
+              style={{
+                color: '#407348', 
+              }}
+            >
+              Descripción
+            </p>
+            <p
+              className="text-base font-light"
+              style={{
+                color: '#24402B', 
+              }}
+            >
+              {student.descripcion || 'Sin descripción'}
+            </p>
+          </div>
+          <div>
+            <p
+              className="text-sm font-medium uppercase"
+              style={{
+                color: '#407348', 
+              }}
+            >
+              Género
+            </p>
+            <p
+              className="text-base font-light"
+              style={{
+                color: '#24402B', 
+              }}
+            >
+              {student.genero || 'No especificado'}
+            </p>
+          </div>
+          <div>
+            <p
+              className="text-sm font-medium uppercase"
+              style={{
+                color: '#407348', 
+              }}
+            >
+              Municipio
+            </p>
+            <p
+              className="text-base font-light"
+              style={{
+                color: '#24402B', 
+              }}
+            >
+              {student.municipio || 'No especificado'}
+            </p>
+          </div>
+          <div>
+            <p
+              className="text-sm font-medium uppercase"
+              style={{
+                color: '#407348', 
+              }}
+            >
+              Departamento
+            </p>
+            <p
+              className="text-base font-light"
+              style={{
+                color: '#24402B', 
+              }}
+            >
+              {student.departamento || 'No especificado'}
+            </p>
+          </div>
+          <div>
+            <p
+              className="text-sm font-medium uppercase"
+              style={{
+                color: '#407348', 
+              }}
+            >
+              Institución
+            </p>
+            <p
+              className="text-base font-light"
+              style={{
+                color: '#24402B', 
+              }}
+            >
+              {student.institucion_id || 'No especificado'}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Sección de logros */}
+      <div className="p-6">
+        <h3
+          className="text-lg font-bold mb-4"
+          style={{
+            color: '#24402B', 
+          }}
+        >
+          Logros
+        </h3>
+        <ul className="list-disc list-inside space-y-2">
+          {student.logros && student.logros.length > 0 ? (
+            student.logros.map((logro, index) => (
+              <li
+                key={index}
+                className="text-base font-light"
+                style={{
+                  color: '#407348', 
+                }}
+              >
+                {logro}
+              </li>
+            ))
+          ) : (
+            <p className="text-base font-light" style={{ color: '#9FBFA7' }}>
+              No hay logros disponibles.
+            </p>
+          )}
+        </ul>
+      </div>
+
+      {/* Sección de insignias */}
+      <div className="p-6">
+        <h3
+          className="text-lg font-bold mb-4"
+          style={{
+            color: '#24402B', 
+          }}
+        >
+          Insignias
+        </h3>
+        <div className="flex flex-wrap gap-4">
+          {student.insignias && student.insignias.length > 0 ? (
+            student.insignias.map((insignia, index) => (
+              <div
+                key={index}
+                className="w-16 h-16 rounded-full border-4 shadow-md flex items-center justify-center"
+                style={{
+                  borderColor: '#407348', 
+                  backgroundColor: '#F2F2F2', 
+                }}
+              >
+                <img
+                  src={insignia.icono || 'https://via.placeholder.com/64'}
+                  alt={insignia.nombre}
+                  className="w-12 h-12 object-cover"
+                />
+              </div>
+            ))
+          ) : (
+            <p className="text-base font-light" style={{ color: '#9FBFA7' }}>
+              No hay insignias disponibles.
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Botón de editar */}
+      <div className="p-6 text-center">
+        <button
+          onClick={onEdit}
+          className="px-6 py-3 rounded-lg font-semibold"
+          style={{
+            backgroundColor: '#407348', 
+            color: '#F2F2F2', 
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+          }}
+          onMouseOver={(e) => {
+            e.target.style.backgroundColor = '#24402B'; 
+          }}
+          onMouseOut={(e) => {
+            e.target.style.backgroundColor = '#407348'; 
+          }}
+        >
+          Editar Perfil
+        </button>
+      </div>
+    </div>
   );
 };
 
-export default UserProfileDisplay;
+export default StudentProfileDisplay;

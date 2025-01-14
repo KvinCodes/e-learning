@@ -11,7 +11,7 @@ const Navbar = () => {
                 {/* Logo */}
                 <div className="flex items-center space-x-4">
                     <img
-                        src="https://via.placeholder.com/50"
+                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_4w0sNSZEj09xgmc4Vvxm1UCuiurHafMseg&s"
                         alt="Logo"
                         className="h-10 w-10"
                     />

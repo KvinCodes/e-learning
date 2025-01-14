@@ -1,13 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const StudentProfileEdit = ({ student, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
     nombre_completo: student.nombre_completo || '',
+    correo: student.correo || '',
     descripcion: student.descripcion || '',
-    institucion: student.institucion || '',
+    fecha_nacimiento: student.fecha_nacimiento || '',
+    genero: student.genero || '',
+    institucion_id: student.institucion_id || '',
+    departamento_id: '',
+    municipio_id: '',
     foto_perfil: student.foto_perfil || '',
     contrasena: '', // Nueva contraseña
   });
+
+  const [instituciones, setInstituciones] = useState([]);
+  const [departamentos, setDepartamentos] = useState([]);
+  const [municipios, setMunicipios] = useState([]);
+
+  const apiUrl = process.env.REACT_APP_API_URL;
+
+  useEffect(() => {
+    const fetchInstituciones = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/instituciones`);
+        setInstituciones(response.data);
+      } catch (error) {
+        console.error('Error al obtener instituciones:', error);
+      }
+    };
+
+    const fetchDepartamentos = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/departamentos`);
+        setDepartamentos(response.data);
+      } catch (error) {
+        console.error('Error al obtener departamentos:', error);
+      }
+    };
+
+    fetchInstituciones();
+    fetchDepartamentos();
+  }, [apiUrl]);
+
+  useEffect(() => {
+    const fetchMunicipios = async () => {
+      try {
+        if (formData.departamento_id) {
+          const response = await axios.get(`${apiUrl}/municipios?departamento_id=${formData.departamento_id}`);
+          setMunicipios(response.data);
+        } else {
+          setMunicipios([]);
+        }
+      } catch (error) {
+        console.error('Error al obtener municipios:', error);
+      }
+    };
+
+    fetchMunicipios();
+  }, [formData.departamento_id, apiUrl]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -27,7 +79,7 @@ const StudentProfileEdit = ({ student, onSave, onCancel }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(formData); // Enviamos todos los datos, incluyendo la contraseña nueva
+    onSave(formData);
   };
 
   return (
@@ -45,6 +97,17 @@ const StudentProfileEdit = ({ student, onSave, onCancel }) => {
         />
       </div>
       <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Correo</label>
+        <input
+          type="email"
+          name="correo"
+          value={formData.correo}
+          onChange={handleInputChange}
+          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          required
+        />
+      </div>
+      <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700">Descripción</label>
         <textarea
           name="descripcion"
@@ -54,14 +117,76 @@ const StudentProfileEdit = ({ student, onSave, onCancel }) => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700">Institución</label>
+        <label className="block text-sm font-medium text-gray-700">Fecha de Nacimiento</label>
         <input
-          type="text"
-          name="institucion"
-          value={formData.institucion}
+          type="date"
+          name="fecha_nacimiento"
+          value={formData.fecha_nacimiento}
           onChange={handleInputChange}
           className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Género</label>
+        <select
+          name="genero"
+          value={formData.genero}
+          onChange={handleInputChange}
+          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        >
+          <option value="">Seleccione un género</option>
+          <option value="masculino">Masculino</option>
+          <option value="femenino">Femenino</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Departamento</label>
+        <select
+          name="departamento_id"
+          value={formData.departamento_id}
+          onChange={handleInputChange}
+          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        >
+          <option value="">Seleccione un departamento</option>
+          {departamentos.map((dep) => (
+            <option key={dep.id} value={dep.id}>
+              {dep.nombre}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Municipio</label>
+        <select
+          name="municipio_id"
+          value={formData.municipio_id}
+          onChange={handleInputChange}
+          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        >
+          <option value="">Seleccione un municipio</option>
+          {municipios.map((mun) => (
+            <option key={mun.id} value={mun.id}>
+              {mun.nombre}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Institución</label>
+        <select
+          name="institucion_id"
+          value={formData.institucion_id}
+          onChange={handleInputChange}
+          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        >
+          <option value="">Seleccione una institución</option>
+          {instituciones.map((inst) => (
+            <option key={inst.id} value={inst.id}>
+              {inst.nombre}
+            </option>
+          ))}
+        </select>
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700">Foto de Perfil</label>

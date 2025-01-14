@@ -15,7 +15,7 @@ const AboutUs = () => {
           {/* Tarjeta 1 */}
           <div className="bg-green-50 dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
             <img
-              src="https://via.placeholder.com/300x200?text=Exploración+Espacial"
+              src="https://st.depositphotos.com/1745098/3423/i/450/depositphotos_34232789-stock-photo-vision-mission-buzzword.jpg"
               alt="Exploración Espacial"
               className="w-full h-48 object-cover"
             />
@@ -32,7 +32,7 @@ const AboutUs = () => {
           {/* Tarjeta 2 */}
           <div className="bg-green-50 dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
             <img
-              src="https://via.placeholder.com/300x200?text=Innovación+Tecnológica"
+              src="https://uepbolivia.com/wp-content/uploads/2020/05/mision-sin-fondo.png"
               alt="Innovación Tecnológica"
               className="w-full h-48 object-cover"
             />
@@ -49,7 +49,7 @@ const AboutUs = () => {
           {/* Tarjeta 3 */}
           <div className="bg-green-50 dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
             <img
-              src="https://via.placeholder.com/300x200?text=Biología+en+Acción"
+              src="https://st.depositphotos.com/1745098/3423/i/450/depositphotos_34232789-stock-photo-vision-mission-buzzword.jpg"
               alt="Biología en Acción"
               className="w-full h-48 object-cover"
             />

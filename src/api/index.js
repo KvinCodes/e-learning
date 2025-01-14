@@ -9,7 +9,7 @@ const institucionRoutes = require('../api/routes/institucionesRoutes');
 const authRoutes = require("../api/routes/authRoutes");
 const authMiddleware = require("../api/middlewares/authMiddlewares");
 const estudiantesRoutes = require('./routes/EstudianteRoutes');
-
+const institucionesRoutes = require('./routes/institucionesRoutes');
 console.log("Variables de entorno:", process.env);
 
 const app = express();
@@ -27,6 +27,7 @@ app.use('/api/departamentos', departamentoRoutes);
 app.use('/api/municipios', municipioRoutes);
 app.use('/api/instituciones', institucionRoutes);
 app.use('/api/estudiantes', estudiantesRoutes);
+app.use('/api/instituciones', institucionesRoutes);
 
 
 sequelize.sync({ force: false }).then(() => {

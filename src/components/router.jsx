@@ -24,7 +24,7 @@ const Router = () => {
             <Route path="/list" element={<QuizList />} />
             <Route path="/quizview" element={<QuizView />} />
             <Route path="/create" element={<CreateQuiz setQuizQuestions={setQuizQuestions} />} />
-            <Route path="/profile" element={<StudentProfile />} />
+            <Route path="/profile/:id" element={<StudentProfile />} />
             <Route path="/update" element={<UpdateProfile />} />
             <Route path="/create/student" element={<CreateStudent />} />
             <Route path="/about" element={<AboutUs />} />
