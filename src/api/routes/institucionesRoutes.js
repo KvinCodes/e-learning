@@ -1,16 +1,13 @@
 const express = require('express');
-const Institucion = require('../models/Institucion');
-const Municipio = require('../models/Municipio');
+const InstitucionController = require('../controllers/institucionController');
+
 const router = express.Router();
 
-// Obtener todas las instituciones con su municipio
-router.get('/', async (req, res) => {
-  try {
-    const instituciones = await Institucion.findAll({ include: Municipio });
-    res.json(instituciones);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// Rutas para instituciones
+router.get('/', InstitucionController.getAllInstituciones); // Obtener todas las instituciones
+router.get('/municipio/:municipioId', InstitucionController.getInstitucionesByMunicipio); // Instituciones por municipio
+router.post('/', InstitucionController.createInstitucion); // Crear institución
+router.put('/:id', InstitucionController.updateInstitucion); // Actualizar institución
+router.delete('/:id', InstitucionController.deleteInstitucion); // Eliminar institución
 
 module.exports = router;

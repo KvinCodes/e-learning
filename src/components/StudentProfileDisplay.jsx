@@ -64,7 +64,7 @@ const StudentProfileDisplay = ({ student, onEdit }) => {
                 color: '#24402B', 
               }}
             >
-              {student.descripcion || 'Sin descripción'}
+              {student.descripcion || ''}
             </p>
           </div>
           <div>
@@ -82,7 +82,7 @@ const StudentProfileDisplay = ({ student, onEdit }) => {
                 color: '#24402B', 
               }}
             >
-              {student.genero || 'No especificado'}
+              {student.genero || ''}
             </p>
           </div>
           <div>
@@ -100,7 +100,7 @@ const StudentProfileDisplay = ({ student, onEdit }) => {
                 color: '#24402B', 
               }}
             >
-              {student.municipio || 'No especificado'}
+              {student.municipio || ''}
             </p>
           </div>
           <div>
@@ -118,7 +118,7 @@ const StudentProfileDisplay = ({ student, onEdit }) => {
                 color: '#24402B', 
               }}
             >
-              {student.departamento || 'No especificado'}
+              {student.departamento || ''}
             </p>
           </div>
           <div>
@@ -136,7 +136,7 @@ const StudentProfileDisplay = ({ student, onEdit }) => {
                 color: '#24402B', 
               }}
             >
-              {student.institucion_id || 'No especificado'}
+              {student.institucion_id || ''}
             </p>
           </div>
         </div>

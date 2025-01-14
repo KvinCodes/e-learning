@@ -11,7 +11,6 @@ import QuizView from "./quizzview";
 import CreateQuiz from "./createQuiz";
 import React from "react";
 import SelectDepartamentoMunicipio from "./SelectDepartamentoMunicipio";
-import CreateStudent from "./CreateStudentProfile";
 
 const Router = () => {
     const [quizQuestions, setQuizQuestions] = React.useState([]);
@@ -26,7 +25,6 @@ const Router = () => {
             <Route path="/create" element={<CreateQuiz setQuizQuestions={setQuizQuestions} />} />
             <Route path="/profile/:id" element={<StudentProfile />} />
             <Route path="/update" element={<UpdateProfile />} />
-            <Route path="/create/student" element={<CreateStudent />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/select" element={<SelectDepartamentoMunicipio />} />
