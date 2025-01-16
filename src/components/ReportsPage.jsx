@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Checkbox,
   TextField,
@@ -11,8 +11,12 @@ import {
   Paper,
   Typography,
   FormControlLabel,
+  Button,
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import axios from "axios";
 
 // Tema personalizado
 const theme = createTheme({
@@ -27,192 +31,47 @@ const theme = createTheme({
 });
 
 const ReportsPage = () => {
-  const [usuarios, setUsuarios] = useState([
-    {
-      id: 1,
-      nombre: "Juan",
-      apellido: "Pérez",
-      municipio: "Guatemala",
-      fechaRegistro: "2022-01-01",
-      centroEducativo: "Centro Escolar A",
-      tipoCentro: "Público",
-      edad: 12,
-      genero: "Masculino",
-      sesionesAbiertas: 3,
-      niveles: "Nivel 1",
-      materias: "Física",
-    },
-    {
-      id: 2,
-      nombre: "Juan",
-      apellido: "Martínez",
-      municipio: "Santa Tecla",
-      fechaRegistro: "2022-09-15",
-      centroEducativo: "Colegio Fátima",
-      tipoCentro: "Privado",
-      edad: 15,
-      genero: "Masculino",
-      sesionesAbiertas: 2,
-      niveles: "Nivel 3",
-      materias: "Química",
-    },
-    {
-      id: 3,
-      nombre: "Ana",
-      apellido: "López",
-      municipio: "San Salvador",
-      fechaRegistro: "2023-03-22",
-      centroEducativo: "Centro Escolar República de China",
-      tipoCentro: "Público",
-      edad: 14,
-      genero: "Femenino",
-      sesionesAbiertas: 4,
-      niveles: "Nivel 4",
-      materias: "Biología",
-    },
-    {
-      id: 4,
-      nombre: "Carlos",
-      apellido: "Gómez",
-      municipio: "Soyapango",
-      fechaRegistro: "2023-02-14",
-      centroEducativo: "Instituto Nacional de Soyapango",
-      tipoCentro: "Público",
-      edad: 16,
-      genero: "Masculino",
-      sesionesAbiertas: 3,
-      niveles: "Nivel 6",
-      materias: "Física",
-    },
-    {
-      id: 5,
-      nombre: "Ana",
-      apellido: "López",
-      municipio: "San Salvador",
-      fechaRegistro: "2023-03-20",
-      centroEducativo: "Instituto Nacional Francisco Menéndez (INFRAMEN)",
-      tipoCentro: "Público",
-      edad: 15,
-      genero: "Femenino",
-      sesionesAbiertas: 2,
-      niveles: "Nivel 1",
-      materias: "Biología",
-    },
-    {
-      id: 6,
-      nombre: "José",
-      apellido: "Martínez",
-      municipio: "Ilopango",
-      fechaRegistro: "2023-05-10",
-      centroEducativo: "Centro Escolar Católico San Bartolo",
-      tipoCentro: "Privado",
-      edad: 14,
-      genero: "Masculino",
-      sesionesAbiertas: 1,
-      niveles: "Nivel 5",
-      materias: "Química",
-    },
-    {
-      id: 7,
-      nombre: "Sofía",
-      apellido: "Ramírez",
-      municipio: "Apopa",
-      fechaRegistro: "2023-06-25",
-      centroEducativo: "Instituto Nacional de Apopa",
-      tipoCentro: "Público",
-      edad: 17,
-      genero: "Femenino",
-      sesionesAbiertas: 4,
-      niveles: "Nivel 3",
-      materias: "Física",
-    },
-    {
-      id: 8,
-      nombre: "Luis",
-      apellido: "Rivera",
-      municipio: "Santa Tecla",
-      fechaRegistro: "2023-07-18",
-      centroEducativo: "Instituto Nacional Walter Thilo Deininger",
-      tipoCentro: "Público",
-      edad: 15,
-      genero: "Masculino",
-      sesionesAbiertas: 2,
-      niveles: "Nivel 6",
-      materias: "Biología",
-    },
-    {
-      id: 9,
-      nombre: "María",
-      apellido: "Hernández",
-      municipio: "Antiguo Cuscatlán",
-      fechaRegistro: "2023-08-12",
-      centroEducativo: "Colegio Madre del Salvador",
-      tipoCentro: "Privado",
-      edad: 16,
-      genero: "Femenino",
-      sesionesAbiertas: 3,
-      niveles: "Nivel 1",
-      materias: "Química",
-    },
-    {
-      id: 10,
-      nombre: "Fernando",
-      apellido: "Alvarado",
-      municipio: "San Marcos",
-      fechaRegistro: "2023-09-01",
-      centroEducativo: "Instituto Nacional de San Marcos",
-      tipoCentro: "Público",
-      edad: 17,
-      genero: "Masculino",
-      sesionesAbiertas: 4,
-      niveles: "Nivel 2",
-      materias: "Química",
-    },
-    {
-      id: 11,
-      nombre: "Diana",
-      apellido: "Cruz",
-      municipio: "Mejicanos",
-      fechaRegistro: "2023-10-05",
-      centroEducativo: "Centro Escolar Marcelino García Flamenco",
-      tipoCentro: "Público",
-      edad: 14,
-      genero: "Femenino",
-      sesionesAbiertas: 2,
-      niveles: "Nivel 3",
-      materias: "Biología",
-    },
-    {
-      id: 12,
-      nombre: "Ricardo",
-      apellido: "Pérez",
-      municipio: "San Martín",
-      fechaRegistro: "2023-10-20",
-      centroEducativo: "Instituto Nacional de San Martín",
-      tipoCentro: "Público",
-      edad: 15,
-      genero: "Masculino",
-      sesionesAbiertas: 1,
-      niveles: "Nivel 4",
-      materias: "Química",
-    },
-    {
-      id: 13,
-      nombre: "Gabriela",
-      apellido: "Ortiz",
-      municipio: "Ciudad Delgado",
-      fechaRegistro: "2023-11-10",
-      centroEducativo: "Centro Escolar República de Corea",
-      tipoCentro: "Público",
-      edad: 16,
-      genero: "Femenino",
-      sesionesAbiertas: 3,
-      niveles: "Nivel 5",
-      materias: "Física",
-    },
-    
-    // Más usuarios...
-  ]);
+  const [usuarios, setUsuarios] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responseEstudiantes = await axios.get(
+          "http://localhost:3001/api/estudiantes"
+        );
+
+        const estudiantesConDetalles = responseEstudiantes.data.map(
+          (estudiante) => {
+            const nivel =
+              estudiante.nivelesRelacionados?.[0]?.nivel?.nombre || "No asignado";
+            const materia =
+              estudiante.nivelesRelacionados?.[0]?.nivel?.materia?.nombre ||
+              "No asignado";
+
+            return {
+              ...estudiante,
+              municipio:
+                estudiante.institucion?.municipio?.nombre || "No asignado",
+              centroEducativo: estudiante.institucion?.nombre || "No asignado",
+              tipoCentro: estudiante.institucion?.tipo || "No asignado",
+              fechaRegistro: new Date(
+                estudiante.fecha_registro
+              ).toLocaleDateString(),
+              edad: estudiante.edad || "No calculado",
+              niveles: nivel,
+              materias: materia,
+            };
+          }
+        );
+
+        setUsuarios(estudiantesConDetalles);
+      } catch (error) {
+        console.error("Error al cargar los datos de los estudiantes", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const [filters, setFilters] = useState({
     nombre: { enabled: false, value: "" },
@@ -223,7 +82,6 @@ const ReportsPage = () => {
     tipoCentro: { enabled: false, value: "" },
     edad: { enabled: false, value: "" },
     genero: { enabled: false, value: "" },
-    sesionesAbiertas: { enabled: false, value: "" },
     niveles: { enabled: false, value: "" },
     materias: { enabled: false, value: "" },
   });
@@ -247,18 +105,91 @@ const ReportsPage = () => {
     });
   });
 
+  const downloadPdfDocument = async (data) => {
+    const pdf = new jsPDF();
+    const marginLeft = 15;
+    const pageWidth = pdf.internal.pageSize.width;
+
+    // Agregar título centrado
+    pdf.setFontSize(18);
+    pdf.text(`INFORME DE ${data.nombre.toUpperCase()} ${data.apellido.toUpperCase()}`, pageWidth / 2, 20, null, null, 'center');
+
+    // Espaciado inicial
+    pdf.setFontSize(12);
+    pdf.text("Datos del Estudiante:", marginLeft, 40);
+
+    // Agregar encabezados de tabla
+    const headers = [
+      [
+        "Nombre",
+        "Apellido",
+        "Municipio",
+        "Fecha de Registro",
+        "Centro Educativo",
+        "Tipo Centro",
+        "Edad",
+        "Género",
+        "Niveles",
+        "Materias",
+      ],
+    ];
+
+    // Agregar datos del estudiante
+    const rows = [
+      [
+        data.nombre,
+        data.apellido,
+        data.municipio,
+        data.fechaRegistro,
+        data.centroEducativo,
+        data.tipoCentro,
+        data.edad,
+        data.genero,
+        data.niveles,
+        data.materias,
+      ],
+    ];
+
+    // Renderizar tabla en el PDF
+    pdf.autoTable({
+      head: headers,
+      body: rows,
+      startY: 50, // Ajustar para evitar superposición con el título
+      styles: {
+        halign: "center",
+        valign: "middle",
+      },
+      headStyles: {
+        fillColor: [46, 125, 50], // Verde oscuro
+        textColor: [255, 255, 255], // Blanco
+        fontSize: 10,
+      },
+      bodyStyles: {
+        fontSize: 9,
+      },
+      margin: { left: marginLeft, right: marginLeft },
+    });
+
+    // Guardar PDF con el nombre del estudiante
+    pdf.save(`${data.nombre} - ${data.apellido} - report.pdf`);
+  };
+
   return (
     <ThemeProvider theme={theme}>
-      <div style={{ padding: "2rem", backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
+      <div
+        style={{
+          padding: "4rem",
+          backgroundColor: "#f5f5f5",
+          minHeight: "100vh",
+        }}
+      >
         <Typography variant="h4" gutterBottom color="primary">
           Informes
         </Typography>
-
-        {/* Filtros */}
         <Paper
           style={{
             padding: "0.5rem",
-            marginBottom: "1rem",
+            marginBottom: "2rem",
             maxHeight: "220px",
             overflowY: "auto",
             backgroundColor: "#fafafa",
@@ -268,7 +199,7 @@ const ReportsPage = () => {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, 190px)",
+                gridTemplateColumns: "repeat(auto-fill, 180px)",
                 gap: "0.9rem",
               }}
             >
@@ -304,8 +235,6 @@ const ReportsPage = () => {
             </div>
           </form>
         </Paper>
-
-        {/* Tabla */}
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
@@ -319,9 +248,9 @@ const ReportsPage = () => {
                   "Tipo Centro",
                   "Edad",
                   "Género",
-                  "Sesiones Abiertas",
                   "Niveles",
                   "Materias",
+                  "Acción",
                 ].map((header) => (
                   <TableCell
                     key={header}
@@ -338,7 +267,7 @@ const ReportsPage = () => {
             </TableHead>
             <TableBody>
               {filteredUsuarios.map((usr) => (
-                <TableRow key={usr.id}>
+                <TableRow key={usr.id} id={`reportRow-${usr.id}`}>
                   <TableCell>{usr.nombre}</TableCell>
                   <TableCell>{usr.apellido}</TableCell>
                   <TableCell>{usr.municipio}</TableCell>
@@ -347,9 +276,16 @@ const ReportsPage = () => {
                   <TableCell>{usr.tipoCentro}</TableCell>
                   <TableCell>{usr.edad}</TableCell>
                   <TableCell>{usr.genero}</TableCell>
-                  <TableCell>{usr.sesionesAbiertas}</TableCell>
                   <TableCell>{usr.niveles}</TableCell>
                   <TableCell>{usr.materias}</TableCell>
+                  <TableCell>
+                    <Button
+                      onClick={() => downloadPdfDocument(usr)}
+                      style={{ backgroundColor: "#2e7d32", color: "white" }}
+                    >
+                      Descargar
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

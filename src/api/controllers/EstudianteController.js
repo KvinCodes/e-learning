@@ -1,5 +1,10 @@
 const bcrypt = require('bcryptjs');
 const Estudiante = require('../models/estudiante');
+const Institucion = require('../models/Institucion');
+const Municipio = require('../models/Municipio');
+const EstudiantesNiveles = require('../models/EstudiantesNiveles');
+const Nivel = require('../models/Nivel');
+const Materia = require('../models/Materia');
 
 const EstudianteController = {
   // Obtener todos los estudiantes
@@ -66,19 +71,17 @@ const EstudianteController = {
         foto_perfil,
       } = req.body;
 
-      // Validación básica
       if (!nombre || !apellido || !correo || !contrasena) {
-        return res.status(400).json({ error: 'Los campos obligatorios son: nombre, apellido, correo y contrasena' });
+        return res.status(400).json({ error: 'Faltan campos obligatorios' });
       }
 
-      // Hashea la contraseña
       const hashedPassword = await bcrypt.hash(contrasena, 10);
 
       const nuevoEstudiante = await Estudiante.create({
         nombre,
         apellido,
         correo,
-        contrasena: hashedPassword, // Almacena la contraseña hasheada
+        contrasena: hashedPassword,
         fecha_nacimiento,
         genero,
         institucion_id,
@@ -112,12 +115,10 @@ const EstudianteController = {
         return res.status(404).json({ error: 'Estudiante no encontrado' });
       }
 
-      // Actualiza solo los campos proporcionados
       estudiante.nombre = nombre || estudiante.nombre;
       estudiante.apellido = apellido || estudiante.apellido;
       estudiante.correo = correo || estudiante.correo;
 
-      // Si se proporciona una nueva contraseña, hashearla antes de almacenarla
       if (contrasena) {
         estudiante.contrasena = await bcrypt.hash(contrasena, 10);
       }
@@ -151,6 +152,64 @@ const EstudianteController = {
     } catch (error) {
       console.error('Error al eliminar estudiante:', error);
       res.status(500).json({ error: 'Error al eliminar estudiante' });
+    }
+  },
+
+  // Listar estudiantes para reportes
+  listarEstudiantes: async (req, res) => {
+    try {
+      const estudiantes = await Estudiante.findAll({
+        include: [
+          {
+            model: Institucion,
+            as: 'institucion',
+            include: [
+              {
+                model: Municipio,
+                as: 'municipio',
+                attributes: ['nombre'],
+              },
+            ],
+            attributes: ['nombre', 'tipo'],
+          },
+          {
+            model: EstudiantesNiveles,
+            as: 'nivelesRelacionados',
+            include: [
+              {
+                model: Nivel,
+                as: 'nivel',
+                include: [
+                  {
+                    model: Materia,
+                    as: 'materia',
+                    attributes: ['nombre'],
+                  },
+                ],
+                attributes: ['nombre'],
+              },
+            ],
+          },
+        ],
+      });
+
+      const estudiantesConEdad = estudiantes.map(estudiante => {
+        const today = new Date();
+        const birthDate = new Date(estudiante.fecha_nacimiento);
+        const age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        const edad = m < 0 || (m === 0 && today.getDate() < birthDate.getDate()) ? age - 1 : age;
+
+        return {
+          ...estudiante.toJSON(),
+          edad,
+        };
+      });
+
+      res.json(estudiantesConEdad);
+    } catch (error) {
+      console.error('Error al obtener estudiantes:', error);
+      res.status(500).json({ error: `Error al obtener los datos de los estudiantes: ${error.message}` });
     }
   },
 };

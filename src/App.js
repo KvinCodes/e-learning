@@ -3,7 +3,6 @@ import { BrowserRouter, useLocation } from "react-router-dom";
 import Router from './components/router';
 import Navbar from './components/partials/Navbar';
 import Footer from './components/partials/Footer';
-import UserProfileDisplay from "./components/StudentProfileDisplay";
 import './App.css';
 import './index.css';
 
@@ -13,7 +12,7 @@ function App() {
     const location = useLocation();
 
     // Rutas donde no quieres mostrar el Navbar y Footer
-    const noLayoutRoutes = ["/", "/signup"];
+    const noLayoutRoutes = ["/signin", "/signup"];
     const hideLayout = noLayoutRoutes.includes(location.pathname);
 
     return (

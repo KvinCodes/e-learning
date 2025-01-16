@@ -2,11 +2,17 @@ const Institucion = require('../models/Institucion');
 const Municipio = require('../models/Municipio');
 
 const InstitucionController = {
-  // Obtener todas las instituciones
+  // Obtener todas las instituciones (para perfiles y reportes)
   getAllInstituciones: async (req, res) => {
     try {
       const instituciones = await Institucion.findAll({
-        include: [{ model: Municipio, as: 'municipio' }],
+        include: [
+          {
+            model: Municipio,
+            as: 'municipio',
+            attributes: ['id', 'nombre'], // Atributos relevantes del municipio
+          },
+        ],
       });
 
       if (!instituciones || instituciones.length === 0) {
@@ -20,14 +26,20 @@ const InstitucionController = {
     }
   },
 
-  // Obtener instituciones por municipio
+  // Obtener instituciones por municipio (para perfiles y reportes)
   getInstitucionesByMunicipio: async (req, res) => {
     const { municipioId } = req.params;
 
     try {
       const instituciones = await Institucion.findAll({
         where: { municipio_id: municipioId },
-        include: [{ model: Municipio, as: 'municipio' }],
+        include: [
+          {
+            model: Municipio,
+            as: 'municipio',
+            attributes: ['id', 'nombre'], // Atributos relevantes del municipio
+          },
+        ],
       });
 
       if (!instituciones || instituciones.length === 0) {
@@ -103,6 +115,26 @@ const InstitucionController = {
     } catch (error) {
       console.error('Error al eliminar institución:', error);
       res.status(500).json({ error: 'Error al eliminar institución' });
+    }
+  },
+
+  // Listar instituciones para reportes (específico si es necesario)
+  listarInstitucionesReporte: async (req, res) => {
+    try {
+      const instituciones = await Institucion.findAll({
+        include: [
+          {
+            model: Municipio,
+            as: 'municipio',
+            attributes: ['id', 'nombre'], // Solo devolver el nombre del municipio
+          },
+        ],
+      });
+
+      res.status(200).json(instituciones);
+    } catch (error) {
+      console.error('Error al obtener instituciones:', error);
+      res.status(500).json({ error: 'Error al obtener instituciones' });
     }
   },
 };

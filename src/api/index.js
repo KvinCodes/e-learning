@@ -5,36 +5,39 @@ const cors = require('cors');
 const sequelize = require('../config/db');
 const departamentoRoutes = require('../api/routes/departamentosRoutes');
 const municipioRoutes = require('../api/routes/municipiosRoutes');
-const institucionRoutes = require('../api/routes/institucionesRoutes');
 const authRoutes = require("../api/routes/authRoutes");
-// const authMiddleware = require("../api/middlewares/authMiddlewares");
-const estudiantesRoutes = require('./routes/EstudianteRoutes');
-const institucionesRoutes = require('./routes/institucionesRoutes');
-console.log("Variables de entorno:", process.env);
+const estudianteRoutes = require('../api/routes/EstudianteRoutes');
+const materiasRoutes = require('../api/routes/materiaRoutes');
+const nivelesRoutes = require('../api/routes/nivelesRoutes');
+const institucionRoutes = require('../api/routes/institucionesRoutes');
+const quizRoutes = require("./routes/quizRoutes");
+
+console.log("Variables de entorno cargadas correctamente");
 
 const app = express();
 
-//app.use(cors());
-app.use(cors({ origin: '*' }));
-app.use(bodyParser.json());
-app.use(cors({ origin: 'http://localhost:3000' })); // Configura el origen
+// Configuración de CORS
+app.use(cors({ origin: 'http://localhost:3000' }));
 
+// Middleware para manejar JSON
+app.use(bodyParser.json());
 
 // Rutas
 app.use("/api/auth", authRoutes);
-// app.use(authMiddleware); // Middleware global para proteger rutas
-
-
 app.use('/api/departamentos', departamentoRoutes);
 app.use('/api/municipios', municipioRoutes);
 app.use('/api/instituciones', institucionRoutes);
-app.use('/api/estudiantes', estudiantesRoutes);
-app.use('/api/instituciones', institucionesRoutes);
+app.use('/api/estudiantes', estudianteRoutes);
+app.use('/api/niveles', nivelesRoutes);
+app.use('/api/materias', materiasRoutes);
+app.use("/api/quizzes", quizRoutes);
 
-
+// Conexión y sincronización con la base de datos
 sequelize.sync({ force: false }).then(() => {
-  console.log('Base de datos conectada');
+  console.log('Base de datos conectada correctamente');
   app.listen(process.env.API_PORT || 3001, () => {
     console.log(`Servidor ejecutándose en el puerto ${process.env.API_PORT || 3001}`);
   });
+}).catch((error) => {
+  console.error('Error al conectar con la base de datos:', error);
 });

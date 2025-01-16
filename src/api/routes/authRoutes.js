@@ -8,6 +8,9 @@ const roleMiddleware = require("../middlewares/roleMiddleware");
 router.post("/signup", AuthController.register);
 router.post("/signin", AuthController.login);
 
+// Ruta para verificar el token y obtener información del usuario
+router.get("/verify", AuthController.verify);
+
 // Rutas protegidas
 router.get(
   "/admin-dashboard",

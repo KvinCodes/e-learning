@@ -3,11 +3,21 @@ import axios from "axios";
 
 const CreateQuiz = () => {
   const [quizTitle, setQuizTitle] = useState("");
-  const [professor, setProfessor] = useState("");
+  const [description, setDescription] = useState(""); // Campo de descripción
+  const [level, setLevel] = useState("");
+  const [subject, setSubject] = useState("");
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState("");
   const [currentOptions, setCurrentOptions] = useState(["", "", "", ""]);
   const [correctAnswer, setCorrectAnswer] = useState("");
+
+  const levelMap = {
+    septimo: "septimo",
+    octavo: "octavo",
+    noveno: "noveno",
+    primer_ano: "primer_ano",
+    segundo_ano: "segundo_ano",
+  };
 
   const handleAddQuestion = () => {
     if (!currentQuestion || !correctAnswer || currentOptions.some((opt) => !opt)) {
@@ -17,8 +27,11 @@ const CreateQuiz = () => {
 
     const newQuestion = {
       question: currentQuestion,
-      options: currentOptions,
-      answer: correctAnswer,
+      type: "opcion_multiple",
+      options: currentOptions.map((option) => ({
+        text: option,
+        isCorrect: option === correctAnswer,
+      })),
     };
 
     setQuestions([...questions, newQuestion]);
@@ -28,22 +41,42 @@ const CreateQuiz = () => {
   };
 
   const handleSubmitQuiz = async () => {
-    if (!quizTitle || !professor || questions.length === 0) {
+    if (!quizTitle || !description || !level || !subject || questions.length === 0) {
       alert("Completa todos los campos antes de guardar el cuestionario.");
+      return;
+    }
+
+    const mappedLevel = levelMap[level];
+    if (!mappedLevel) {
+      alert("Nivel inválido seleccionado.");
       return;
     }
 
     const newQuiz = {
       theme: quizTitle,
-      professor,
-      questions,
+      description, // Agregar la descripción
+      level: mappedLevel,
+      subject,
+      questions: questions.map((q) => ({
+        question: q.question,
+        type: q.type,
+        options: q.options,
+      })),
     };
 
     try {
-      const response = await axios.post("/api/quizzes", newQuiz);
+      const response = await axios.post("http://localhost:3001/api/quizzes", newQuiz);
       alert("Cuestionario creado con éxito");
+      console.log("Respuesta de la API:", response.data);
+
+      // Reiniciar el formulario
+      setQuizTitle("");
+      setDescription(""); // Reiniciar descripción
+      setLevel("");
+      setSubject("");
+      setQuestions([]);
     } catch (error) {
-      console.error("Error al crear el cuestionario", error);
+      console.error("Error al crear el cuestionario:", error);
       alert("No se pudo crear el cuestionario.");
     }
   };
@@ -64,14 +97,43 @@ const CreateQuiz = () => {
       </div>
 
       <div className="mb-4">
-        <label className="block text-gray-700 font-medium mb-2">Profesor</label>
-        <input
-          type="text"
-          value={professor}
-          onChange={(e) => setProfessor(e.target.value)}
+        <label className="block text-gray-700 font-medium mb-2">Descripción</label>
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
           className="w-full p-2 border border-gray-300 rounded-lg"
-          placeholder="Escribe el nombre del profesor"
+          placeholder="Escribe una descripción del cuestionario"
         />
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-gray-700 font-medium mb-2">Nivel</label>
+        <select
+          value={level}
+          onChange={(e) => setLevel(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded-lg"
+        >
+          <option value="" disabled>Selecciona el nivel</option>
+          <option value="septimo">Séptimo Grado</option>
+          <option value="octavo">Octavo Grado</option>
+          <option value="noveno">Noveno Grado</option>
+          <option value="primer_ano">Primer Año</option>
+          <option value="segundo_ano">Segundo Año</option>
+        </select>
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-gray-700 font-medium mb-2">Materia</label>
+        <select
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded-lg"
+        >
+          <option value="" disabled>Selecciona la materia</option>
+          <option value="fisica">Física</option>
+          <option value="quimica">Química</option>
+          <option value="biologia">Biología</option>
+        </select>
       </div>
 
       <div className="mb-4">
@@ -153,3 +215,13 @@ const CreateQuiz = () => {
 };
 
 export default CreateQuiz;
+
+
+
+
+
+
+
+
+
+

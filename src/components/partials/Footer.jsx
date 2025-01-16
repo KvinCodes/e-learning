@@ -100,7 +100,7 @@ const Footer = () => {
                         </Link>
 
                         <Link
-                            to="/"
+                            to="/signin"
                             className="px-4 py-1.5 bg-yellow-300 text-black text-sm font-medium rounded-full hover:bg-yellow-400"
                         >
                             Iniciar Sesión

@@ -1,49 +1,68 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/Usuario");
+const Estudiante = require("../models/estudiante");
+const Administrador = require("../models/Administrador");
 const { validateEmail, validatePassword } = require("../../utils/validators");
 
 const AuthController = {};
 
+// Función para asignar roles
 const roleAssignmentByEmail = (email) => {
   const domain = email.split("@")[1].toLowerCase();
   if (domain === "adminlearn.com") return "Administrador";
   return "Estudiante"; // Rol por defecto
 };
 
-// REGISTRO (SignUp)
+// REGISTRO
 AuthController.register = async (req, res) => {
   try {
-    console.log(req.body);
-    const { email, password } = req.body;
+    const { email, password, nombre, apellido, fechaNacimiento, genero, institucion_id } = req.body;
 
-    // Input validation
+    // Validación de entrada
     if (!validateEmail(email)) {
       return res.status(400).json({ success: false, message: "Email inválido" });
     }
 
     if (!validatePassword(password)) {
-      return res.status(400).json({ success: false, message: "La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un carácter especial" });
+      return res.status(400).json({ success: false, message: "Contraseña inválida" });
     }
 
-    // Verificar si el usuario ya existe por email
+    // Verificar existencia del usuario
     const userExists = await User.findOne({ where: { email } });
     if (userExists) {
       return res.status(400).json({ success: false, message: "El usuario ya existe" });
     }
 
     // Hashear contraseña
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    const role = roleAssignmentByEmail(email);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // Crear usuario
-    const newUser = await User.create({
-      email,
-      contrasena: hashedPassword,
-      rol: role,
-    });
+    const role = roleAssignmentByEmail(email);
+    const newUser = await User.create({ email, contrasena: hashedPassword, rol: role });
+
+    // Crear perfil según el rol
+    if (role === "Estudiante") {
+      await Estudiante.create({
+        usuario_id: newUser.id,
+        nombre,
+        apellido,
+        correo: newUser.email,
+        contrasena: newUser.contrasena,
+        fecha_nacimiento: fechaNacimiento,
+        genero,
+        fecha_registro: new Date(),
+        institucion_id,
+      });
+    } else if (role === "Administrador") {
+      await Administrador.create({
+        usuario_id: newUser.id,
+        nombre,
+        apellido,
+        correo: newUser.email, // Pasa el correo del usuario aquí
+        contrasena: newUser.contrasena, // Pasa la contraseña encriptada
+      });
+    }
 
     return res.status(201).json({
       success: true,
@@ -55,57 +74,71 @@ AuthController.register = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error en AuthController.register:", error);
-    return res.status(500).json({ success: false, message: "Error al registrar el usuario" });
+    console.error("Error en registro:", error);
+    return res.status(500).json({ success: false, message: "Error al registrar usuario" });
   }
 };
 
-// INICIO DE SESIÓN (SignIn)
+// INICIO DE SESIÓN
 AuthController.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Input validation
-    if (!validateEmail(email) || !password) {
-      return res.status(400).json({ success: false, message: "Email o contraseña inválidos" });
-    }
-
-    // Buscar usuario por email
+    // Validación
     const user = await User.findOne({ where: { email } });
-    if (!user) {
+    if (!user || !(await bcrypt.compare(password, user.contrasena))) {
       return res.status(401).json({ success: false, message: "Credenciales inválidas" });
     }
 
-    // Comparar password con el hash en la base
-    const validPassword = await bcrypt.compare(password, user.contrasena);
-    if (!validPassword) {
-      return res.status(401).json({ success: false, message: "Credenciales inválidas" });
+    // Crear token JWT
+    const token = jwt.sign({ userId: user.id, rol: user.rol }, process.env.JWT_SECRET, { expiresIn: "8h" });
+
+    // Obtener perfil según el rol
+    let perfil = null;
+    if (user.rol === "Estudiante") {
+      perfil = await Estudiante.findOne({ where: { usuario_id: user.id } });
+    } else if (user.rol === "Administrador") {
+      perfil = await Administrador.findOne({ where: { usuario_id: user.id } });
     }
 
-    // Crear JWT
-    const token = jwt.sign(
-      {
-        userId: user.id,
-        email: user.email,
-        rol: user.rol,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || "8h" }
-    );
-
-    return res.status(200).json({
-      success: true,
-      message: "Inicio de sesión exitoso",
-      token,
-      user: {
-        id: user.id,
-        email: user.email,
-        rol: user.rol,
-      },
-    });
+    return res.status(200).json({ success: true, token, user: { id: user.id, rol: user.rol }, perfil });
   } catch (error) {
-    console.error("Error en AuthController.login:", error);
+    console.error("Error en inicio de sesión:", error);
     return res.status(500).json({ success: false, message: "Error al iniciar sesión" });
+  }
+};
+
+AuthController.verify = async (req, res) => {
+  try {
+      // Obtener el token del encabezado Authorization
+      const token = req.headers.authorization?.split(" ")[1];
+
+      if (!token) {
+          return res.status(401).json({ success: false, message: "No autorizado: Token no proporcionado" });
+      }
+
+      // Verificar el token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      // Buscar al usuario en la base de datos
+      const user = await User.findByPk(decoded.userId);
+
+      if (!user) {
+          return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+      }
+
+      // Devolver la información del usuario
+      return res.status(200).json({
+          success: true,
+          user: {
+              id: user.id,
+              email: user.email,
+              rol: user.rol,
+          },
+      });
+  } catch (error) {
+      console.error("Error en la verificación del token:", error);
+      return res.status(500).json({ success: false, message: "Error interno del servidor" });
   }
 };
 

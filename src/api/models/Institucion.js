@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const Municipio = require('./Municipio'); // Asegúrate de importar Municipio
+const Municipio = require('./Municipio');
 
 const Institucion = sequelize.define(
   'Institucion',
@@ -17,7 +17,7 @@ const Institucion = sequelize.define(
     },
     direccion: {
       type: DataTypes.STRING(255),
-      allowNull: true,
+      allowNull: true, // Se mantiene como opcional
     },
     tipo: {
       type: DataTypes.ENUM('pública', 'privada'),
@@ -33,13 +33,14 @@ const Institucion = sequelize.define(
     },
   },
   {
-    timestamps: false,
     tableName: 'instituciones',
+    timestamps: false,
   }
 );
 
-// Relación con Municipio
+// Relación: Institución pertenece a un Municipio
 Institucion.belongsTo(Municipio, { foreignKey: 'municipio_id', as: 'municipio' });
-Municipio.hasMany(Institucion, { foreignKey: 'municipio_id' });
+// Relación: Municipio tiene muchas Instituciones
+Municipio.hasMany(Institucion, { foreignKey: 'municipio_id', as: 'instituciones' });
 
 module.exports = Institucion;

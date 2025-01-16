@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../../config/db"); // tu instancia de Sequelize
+const sequelize = require("../../config/db"); 
 
 const User = sequelize.define("usuarios", {
   id: {
@@ -11,13 +11,16 @@ const User = sequelize.define("usuarios", {
     type: DataTypes.STRING(255),
     allowNull: false,
     unique: true,
+    validate: {
+      isEmail: true,
+    },
   },
   contrasena: {
     type: DataTypes.STRING(255),
     allowNull: false,
   },
   rol: {
-    type: DataTypes.ENUM("Admin", "Instructor", "Estudiante"), // ajusta según tus roles
+    type: DataTypes.ENUM("Admin", "Estudiante"),
     defaultValue: "Estudiante",
   },
 },

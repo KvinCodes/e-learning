@@ -42,7 +42,8 @@ const SignUp = () => {
 
   // Estados locales para manejar valores del formulario
   const [formData, setFormData] = useState({
-    fullName: "",
+    name: "",
+    lastname: "",
     email: "",
     password: "",
   });
@@ -185,11 +186,23 @@ const SignUp = () => {
                   margin="normal"
                   required
                   fullWidth
-                  id="fullName"
-                  label="Nombre Completo"
-                  name="fullName"
+                  id="name"
+                  label="Nombre"
+                  name="name"
                   autoFocus
-                  value={formData.fullName}
+                  value={formData.name}
+                  onChange={handleChange}
+                />
+
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="lastname"
+                  label="Apellido"
+                  name="lastname"
+                  autoFocus
+                  value={formData.lastname}
                   onChange={handleChange}
                 />
 
