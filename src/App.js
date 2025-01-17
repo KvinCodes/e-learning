@@ -3,6 +3,7 @@ import { BrowserRouter, useLocation } from "react-router-dom";
 import Router from './components/router';
 import Navbar from './components/partials/Navbar';
 import Footer from './components/partials/Footer';
+import { UserProvider } from './context/UserContext'; // Importa el UserProvider
 import './App.css';
 import './index.css';
 
@@ -27,7 +28,10 @@ function App() {
   return (
     <div>
       <BrowserRouter>
-        <Layout />
+        {/* Envolvemos toda la aplicación dentro del UserProvider */}
+        <UserProvider>
+          <Layout />
+        </UserProvider>
       </BrowserRouter>
     </div>
   );

@@ -19,7 +19,7 @@ const Administrador = sequelize.define(
     },
     contrasena: {
       type: DataTypes.STRING,
-      allowNull: true, // O false si decides hacerlo obligatorio
+      allowNull: true, 
     },
     correo: {
       type: DataTypes.STRING,

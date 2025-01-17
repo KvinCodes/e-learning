@@ -11,12 +11,12 @@ const Cuestionario = sequelize.define(
       primaryKey: true,
     },
     titulo: {
-      type: DataTypes.STRING(150), // Matches varchar(150)
+      type: DataTypes.STRING(150), 
       allowNull: false,
     },
     descripcion: {
-      type: DataTypes.TEXT, // Matches text column
-      allowNull: true, // Table allows NULL for descripcion
+      type: DataTypes.TEXT, 
+      allowNull: true, 
     },
     nivel: {
       type: DataTypes.ENUM('septimo', 'octavo', 'noveno', 'primer_ano', 'segundo_ano'), // Cambiado a ENUM
@@ -24,7 +24,7 @@ const Cuestionario = sequelize.define(
     },
     materia_id: {
       type: DataTypes.INTEGER,
-      allowNull: false, // Matches NOT NULL constraint
+      allowNull: false, 
       references: {
         model: Materia,
         key: "id",
@@ -32,8 +32,8 @@ const Cuestionario = sequelize.define(
     },
   },
   {
-    tableName: "cuestionarios", // Explicitly set the table name
-    timestamps: false, // Disable createdAt and updatedAt
+    tableName: "cuestionarios", 
+    timestamps: false, 
   }
 );
 

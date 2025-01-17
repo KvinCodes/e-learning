@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import Button from "@mui/material/Button";
 
-const QuizDetail = () => {
+const QuizDetail = ({ studentId }) => {
   const { id } = useParams();
   const [quiz, setQuiz] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -35,9 +31,14 @@ const QuizDetail = () => {
 
   const handleSubmit = async () => {
     try {
+      if (!studentId) {
+        alert("No se encontró el ID del estudiante. Por favor, inicia sesión.");
+        return;
+      }
+
       const response = await axios.post(`http://localhost:3001/api/quizzes/${id}/submit`, {
         answers,
-        studentId: 1, // Cambia esto con el ID real del estudiante si está disponible
+        studentId,
       });
 
       const { correctCount, totalQuestions, incorrectCount } = response.data;
@@ -53,80 +54,118 @@ const QuizDetail = () => {
 
   if (loading)
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-        <Typography variant="h6">Cargando...</Typography>
-      </Box>
+<div className="relative min-h-screen flex items-center justify-center">
+  <div
+    className="absolute inset-0 h-[170vh]"
+    style={{
+      backgroundImage: "url('./img/fondo.jpg')",
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+    }}
+  ></div>
+  <div className="absolute inset-0 h-[170vh] bg-green-500/50"></div> {/* Transparencia encima */}
+  <div className="relative max-w-3xl w-full bg-white p-4 rounded-lg shadow-lg">
+    <h1 className="text-center text-lime-700 text-2xl font-medium">Cargando...</h1>
+  </div>
+</div>
+
     );
 
   if (error)
     return (
-      <Box sx={{ textAlign: "center", marginTop: 4 }}>
-        <Typography color="error">{error}</Typography>
-      </Box>
+      <div className="relative min-h-screen flex items-center justify-center">
+        <div
+          className="absolute inset-0 h-[170vh]"
+          style={{
+            backgroundImage: "url('./img/fondo.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        ></div>
+        <div className="absolute inset-0 h-[170vh] bg-green-500/50"></div>
+        <div className="relative max-w-3xl w-full bg-white p-4 rounded-lg shadow-lg">
+          <h1 className="text-center text-red-700 text-2xl font-medium">{error}</h1>
+        </div>
+      </div>
     );
 
   if (!quiz)
     return (
-      <Box sx={{ textAlign: "center", marginTop: 4 }}>
-        <Typography>No se encontró el cuestionario</Typography>
-      </Box>
+      <div className="relative min-h-screen flex items-center justify-center">
+        <div
+          className="absolute inset-0 h-[170vh]"
+          style={{
+            backgroundImage: "url('./img/fondo.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        ></div>
+        <div className="absolute inset-0 h-[170vh] bg-green-500/50"></div>
+        <div className="relative max-w-3xl w-full bg-white p-4 rounded-lg shadow-lg">
+          <h1 className="text-center text-gray-700 text-2xl font-medium">No se encontró el cuestionario</h1>
+        </div>
+      </div>
     );
 
   return (
-    <Box sx={{ padding: 4, maxWidth: 800, margin: "auto" }}>
-      <Typography variant="h4" textAlign="center" marginBottom={4}>
-        {quiz.titulo}
-      </Typography>
+    <div className="relative min-h-screen flex items-center justify-center">
+      <div
+        className="absolute inset-0 h-[170vh]"
+        style={{
+          backgroundImage: "url('./img/fondo.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      ></div>
+      <div className="absolute inset-0 h-[170vh] bg-green-500/50"></div>
+      <div
+        className="relative max-w-3xl w-full bg-white p-4 rounded-lg shadow-lg mt-16"
+        style={{ transform: "translateY(65px)" }}
+      >
+        <h1 className="text-2xl font-bold text-center mb-4" style={{ fontFamily: '"Lato", serif', fontWeight: 900, fontSize: '40px', color: '#052e16' }}>
+          {quiz.titulo}
+        </h1>
 
-      <Typography variant="body1" textAlign="center" marginBottom={4}>
-        {quiz.descripcion}
-      </Typography>
+        <p className="text-center text-lime-700 mb-6">{quiz.descripcion}</p>
 
-      <Typography variant="h6" marginBottom={2}>
-        Preguntas
-      </Typography>
+        <h2 className="text-xl font-bold mb-4">Preguntas</h2>
 
-      {quiz.preguntas && quiz.preguntas.length > 0 ? (
-        quiz.preguntas.map((pregunta, index) => (
-          <Box key={pregunta.id} sx={{ marginBottom: 4 }}>
-            <Typography variant="body1" sx={{ marginBottom: 2 }}>
-              {`${index + 1}. ${pregunta.contenido}`}
-            </Typography>
-            {pregunta.opciones_respuesta &&
-              pregunta.opciones_respuesta.map((opcion) => (
-                <label key={opcion.id} style={{ display: "block", marginBottom: 4 }}>
+        {quiz.preguntas && quiz.preguntas.length > 0 ? (
+          quiz.preguntas.map((pregunta, index) => (
+            <div key={pregunta.id} className="mb-6">
+              <p className="text-lime-700 mb-2 font-medium">{`${index + 1}. ${pregunta.contenido}`}</p>
+              {pregunta.opciones_respuesta.map((opcion) => (
+                <label key={opcion.id} className="block mb-2">
                   <input
                     type="radio"
                     name={`question-${pregunta.id}`}
                     value={opcion.id}
                     checked={answers[pregunta.id] === opcion.id}
                     onChange={() => handleAnswerChange(pregunta.id, opcion.id)}
-                    style={{ marginRight: 8 }}
+                    className="mr-2"
                   />
                   {opcion.contenido}
                 </label>
               ))}
-          </Box>
-        ))
-      ) : (
-        <Typography variant="body2" color="textSecondary">
-          No hay preguntas disponibles.
-        </Typography>
-      )}
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500">No hay preguntas disponibles.</p>
+        )}
 
-      <Divider sx={{ marginBottom: 4 }} />
-
-      <Button
-        variant="contained"
-        color="primary"
-        fullWidth
-        onClick={handleSubmit}
-      >
-        Enviar Respuestas
-      </Button>
-    </Box>
+        <div className="mt-6">
+          <button
+            onClick={handleSubmit}
+            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-800 w-full"
+          >
+            Enviar Respuestas
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 
 export default QuizDetail;
+
 

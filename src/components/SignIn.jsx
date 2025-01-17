@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { createTheme, ThemeProvider } from '@mui/material/styles'; // Importa las dependencias para el tema
-import { Link as RouterLink, useNavigate } from 'react-router-dom'; // Importa Link de React Router
+import React, { useState, useContext } from "react";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { UserContext } from "../context/UserContext";
 import fondo from "../api/assets/fondo.jpg";
 import {
   Avatar,
@@ -16,31 +17,17 @@ import {
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
-// Definimos del tema
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#156c19', // Este es el color verde que se usara
+      main: "#156c19",
     },
   },
 });
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/" sx={{ color: "green.800" }}> Your Website</Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
-
 const SignIn = () => {
-
+  const { login } = useContext(UserContext); // Obtener el método `login` del contexto
   const navigate = useNavigate();
-
-  // Estados locales
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -53,7 +40,6 @@ const SignIn = () => {
     });
   };
 
-  // Cuando el usuario hace submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -62,22 +48,21 @@ const SignIn = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        // Guardar el token en localStorage (o cookies, como prefieras)
-        localStorage.setItem("token", data.token);
-        // Podrías también guardar data.user para mostrar datos del usuario logueado
-        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("token", data.token); // Guardar el token
+        login(data.token, data.user); // Actualizar el contexto de usuario
 
-        alert("¡Bienvenido!");
-        navigate("/reports"); // o la ruta a donde quieras ir tras login
+        // Redirigir según el rol
+        if (data.user.rol === "Administrador") {
+          navigate("/reports");
+        } else {
+          navigate("/");
+        }
       } else {
         alert(data.message || "Error al iniciar sesión");
       }
@@ -122,7 +107,7 @@ const SignIn = () => {
             margin: "auto",
             boxShadow: 3,
             borderRadius: 2,
-            zIndex: 2, // Asegura que este contenido esté sobre el overlay
+            zIndex: 2, 
             backgroundColor: "#d1d5d1", // Fondo blanco para el contenedor #ffffff
           }}
         >
@@ -253,5 +238,18 @@ const SignIn = () => {
     </ThemeProvider>
   );
 };
+
+function Copyright() {
+  return (
+    <Typography variant="body2" color="textSecondary" align="center">
+      {"Copyright © "}
+      <Link color="inherit" href="https://mui.com/">
+        Tu Sitio Web
+      </Link>{" "}
+      {new Date().getFullYear()}
+      {"."}
+    </Typography>
+  );
+}
 
 export default SignIn;

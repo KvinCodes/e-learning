@@ -84,7 +84,7 @@ AuthController.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validación
+    // Verificar usuario
     const user = await User.findOne({ where: { email } });
     if (!user || !(await bcrypt.compare(password, user.contrasena))) {
       return res.status(401).json({ success: false, message: "Credenciales inválidas" });
@@ -101,44 +101,56 @@ AuthController.login = async (req, res) => {
       perfil = await Administrador.findOne({ where: { usuario_id: user.id } });
     }
 
-    return res.status(200).json({ success: true, token, user: { id: user.id, rol: user.rol }, perfil });
+    return res.status(200).json({
+      success: true,
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        rol: user.rol,
+      },
+      perfil, // Retornar datos del perfil
+    });
   } catch (error) {
     console.error("Error en inicio de sesión:", error);
     return res.status(500).json({ success: false, message: "Error al iniciar sesión" });
   }
 };
 
+// Verificar el token
 AuthController.verify = async (req, res) => {
   try {
-      // Obtener el token del encabezado Authorization
-      const token = req.headers.authorization?.split(" ")[1];
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ success: false, message: "No autorizado" });
+    }
 
-      if (!token) {
-          return res.status(401).json({ success: false, message: "No autorizado: Token no proporcionado" });
-      }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findByPk(decoded.userId);
 
-      // Verificar el token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+    }
 
-      // Buscar al usuario en la base de datos
-      const user = await User.findByPk(decoded.userId);
+    let perfil = null;
+    if (user.rol === "Estudiante") {
+      perfil = await Estudiante.findOne({ where: { usuario_id: user.id } });
+    } else if (user.rol === "Administrador") {
+      perfil = await Administrador.findOne({ where: { usuario_id: user.id } });
+    }
 
-      if (!user) {
-          return res.status(404).json({ success: false, message: "Usuario no encontrado" });
-      }
-
-      // Devolver la información del usuario
-      return res.status(200).json({
-          success: true,
-          user: {
-              id: user.id,
-              email: user.email,
-              rol: user.rol,
-          },
-      });
+    res.status(200).json({
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        rol: user.rol,
+        perfil, // Incluye el perfil en la respuesta
+      },
+    });
   } catch (error) {
-      console.error("Error en la verificación del token:", error);
-      return res.status(500).json({ success: false, message: "Error interno del servidor" });
+    console.error(error);
+    res.status(500).json({ success: false, message: "Error del servidor" });
   }
 };
 

@@ -11,16 +11,16 @@ const OpcionRespuesta = sequelize.define(
       primaryKey: true,
     },
     contenido: {
-      type: DataTypes.TEXT, // Matches `text` type in SQL
+      type: DataTypes.TEXT, 
       allowNull: false,
     },
     es_correcta: {
-      type: DataTypes.TINYINT, // Matches `tinyint(1)` in SQL
+      type: DataTypes.TINYINT, 
       allowNull: false,
     },
     pregunta_id: {
       type: DataTypes.INTEGER,
-      allowNull: false, // Matches `NOT NULL` constraint
+      allowNull: false, 
       references: {
         model: Pregunta,
         key: "id",
@@ -28,8 +28,8 @@ const OpcionRespuesta = sequelize.define(
     },
   },
   {
-    tableName: "opciones_respuesta", // Explicitly set the table name
-    timestamps: false, // Disable createdAt and updatedAt
+    tableName: "opciones_respuesta", 
+    timestamps: false, 
   }
 );
 

@@ -58,26 +58,24 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Petición al backend
       const response = await fetch("http://localhost:3001/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        // Ajusta los nombres de los campos según lo que lee tu backend
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
-          // si en tu BD guardas "nombre_completo" y no "fullName", ajusta aquí
-          // rol si lo deseas => "Estudiante"
+          nombre: formData.name,
+          apellido: formData.lastname,
         }),
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
         alert("¡Registro exitoso!");
-        navigate("/"); // redirige a SignIn o a donde quieras
+        navigate("/signin"); // redirige a SignIn
       } else {
         alert(data.message || "Error al registrarse");
       }
@@ -86,6 +84,7 @@ const SignUp = () => {
       alert("Hubo un error en el registro");
     }
   };
+  
 
   return (
     <ThemeProvider theme={theme}> {/* Aquí envolvemos el componente en ThemeProvider */}

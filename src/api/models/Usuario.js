@@ -24,8 +24,7 @@ const User = sequelize.define("usuarios", {
     defaultValue: "Estudiante",
   },
 },
-  // si deseas relacionar con la tabla 'estudiantes' para más datos, 
-  // podrías tener un campo "estudiante_id", etc.
+
   {
     timestamps: false,
     freezeTableName: true

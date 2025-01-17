@@ -17,7 +17,7 @@ const Institucion = sequelize.define(
     },
     direccion: {
       type: DataTypes.STRING(255),
-      allowNull: true, // Se mantiene como opcional
+      allowNull: true, 
     },
     tipo: {
       type: DataTypes.ENUM('pública', 'privada'),

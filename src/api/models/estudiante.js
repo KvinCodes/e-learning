@@ -37,15 +37,15 @@ const Estudiante = sequelize.define(
     },
     contrasena: {
       type: DataTypes.STRING,
-      allowNull: false, 
+      allowNull: false, // La contraseña será obligatoria
     },
     fecha_nacimiento: {
       type: DataTypes.DATE,
-      allowNull: true, 
+      allowNull: true, // Opcional, se actualizará en el perfil
     },
     genero: {
       type: DataTypes.ENUM('masculino', 'femenino'),
-      allowNull: true, 
+      allowNull: true, // Opcional, se actualizará en el perfil
     },
     foto_perfil: {
       type: DataTypes.STRING,
@@ -54,11 +54,11 @@ const Estudiante = sequelize.define(
     fecha_registro: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW, 
+      defaultValue: DataTypes.NOW, // Fecha automática
     },
     institucion_id: {
       type: DataTypes.INTEGER,
-      allowNull: true, 
+      allowNull: true, // Opcional, se actualizará en el perfil
       references: {
         model: 'instituciones',
         key: 'id',
@@ -66,11 +66,11 @@ const Estudiante = sequelize.define(
     },
     departamento: {
       type: DataTypes.STRING,
-      allowNull: true, 
+      allowNull: true, // Opcional
     },
     municipio: {
       type: DataTypes.STRING,
-      allowNull: true, 
+      allowNull: true, // Opcional
     },
   },
   {

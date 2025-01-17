@@ -7,7 +7,7 @@ const Departamento = sequelize.define('Departamento', {
     allowNull: false,
   },
 }, {
-  timestamps: false, // Deshabilita los campos createdAt y updatedAt
+  timestamps: false, 
 });
 
 module.exports = Departamento;

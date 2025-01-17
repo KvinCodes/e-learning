@@ -1,6 +1,7 @@
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001/api";
 console.log("API_URL configurada:", API_URL);
 
+export { API_URL };
 // Obtener todos los departamentos
 export const fetchDepartamentos = async () => {
   const response = await fetch(`${API_URL}/departamentos`);
